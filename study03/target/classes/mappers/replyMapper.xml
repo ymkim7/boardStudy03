@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reply">
+	
+	<!-- 댓글입력 -->
+	<insert id="insertReply">
+		INSERT INTO TBL_REPLY (
+			rno
+			, bno
+			, replytext
+			, replyer
+			, secretReply
+		) VALUES (
+			TBL_REPLY_seq.NEXTVAL
+			, #{bno}
+			, #{replytext}
+			, #{replyer}
+			, #{secretReply}
+		)
+	</insert>
+	
+	<!-- 댓글목록 -->
+	<select id="listReply" resultType="kr.co.vo.ReplyVO">
+		<include refid="pagingHeader"></include>
+		SELECT r.rno
+			 , r.bno
+			 , r.replytext
+			 , r.replyer
+			 , r.secretReply
+			 , r.regdate
+			 , r.updatedate
+			 , m.userName
+			 , (SELECT writer FROM TBL_BOARD WHERE bno = r.bno) AS writer
+		FROM TBL_REPLY r, TBL_MEMBER m
+		WHERE r.replyer = m.userId
+		AND bno = #{bno}
+		ORDER BY rno
+		<include refid="pagingFooter"></include>
+	</select>
+	
+	<!-- 댓글 상세보기 -->
+	<select id="detailReply" resultType="kr.co.vo.ReplyVO">
+		SELECT rno
+			 , bno
+			 , replytext
+			 , replyer
+			 , regdate
+			 , updatedate
+			 , secretReply
+		FROM TBL_REPLY
+		WHERE rno = #{rno}
+	</select>
+	
+	<!-- 댓글 수정 -->
+	<select id="updateReply">
+		UPDATE TBL_REPLY SET
+			replytext = #{replytext, jdbcType=VARCHAR}
+		WHERE rno = #{rno}
+	</select>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteReply">
+		DELETE
+		FROM TBL_REPLY
+		WHERE rno = #{rno}
+	</delete>
+	
+	<!-- 댓글 갯수 (페이징 처리) -->
+	<select id="countReply" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_REPLY
+		WHERE bno = #{bno}
+	</select>
+	
+	<!-- 페이징 sql -->
+	<sql id="pagingHeader">
+		SELECT *
+		FROM (
+			SELECT ROWNUM AS rn
+				 , A.*
+			FROM (
+	</sql>
+	<sql id="pagingFooter">
+			) A
+		) WHERE rn BETWEEN #{start} AND #{end}
+	</sql>
+
+</mapper>

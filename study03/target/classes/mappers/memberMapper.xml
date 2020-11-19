@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="member">
+	
+	<!-- 01. 회원등록 -->
+	<select id="memberList" resultType="kr.co.vo.MemberVO">
+		SELECT userId
+			 , userName
+			 , userEmail
+			 , userRegdate
+		FROM tbl_member
+		ORDER BY userName
+	</select>
+	
+	<!-- 02. 획원등록 -->
+	<insert id="insertMember">
+		INSERT INTO TBL_MEMBER (
+			userId
+			, userPw
+			, userName
+			, userEmail
+		) VALUES (
+			#{userId, jdbcType=VARCHAR}
+			, #{userPw, jdbcType=VARCHAR}
+			, #{userName, jdbcType=VARCHAR}
+			, #{userEmail, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 03. 회원정보 상세조회 -->
+	<select id="viewMember" resultType="kr.co.vo.MemberVO">
+		SELECT userId
+			 , userName
+			 , userEmail
+			 , userRegdate
+			 , userUpdatedate
+		FROM TBL_MEMBER
+		WHERE userId = #{userId, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 04. 회원정보 수정처리 -->
+	<update id="updateMember">
+		UPDATE TBL_MEMBER SET
+			userPw = #{userPw, jdbcType=VARCHAR}
+			, userName = #{userName, jdbcType=VARCHAR}
+			, userEmail = #{userEmail, jdbcType=VARCHAR}
+			, userUpdatedate = SYSDATE
+		WHERE userId = #{userId, jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 05. 회원정보 삭제 처리 -->
+	<delete id="deleteMember">
+		DELETE
+		FROM TBL_MEMBER
+		WHERE userId = #{userId, jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="checkPw" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_MEMBER
+		WHERE userId = #{userId, jdbcType=VARCHAR}
+		AND userPw = #{userPw, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="loginCheck" resultType="String">
+		SELECT userName
+		FROM TBL_MEMBER
+		WHERE userId = #{userId, jdbcType=VARCHAR}
+		AND userPw = #{userPw, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="viewMember2" resultType="kr.co.vo.MemberVO">
+		SELECT userName
+			 , userId
+			 , userEmail
+			 , userRegdate
+		FROM TBL_MEMBER
+		WHERE userId = #{userId, jdbcType=VARCHAR}
+		AND userPw = #{userPw, jdbcType=VARCHAR}		
+	</select>
+	
+</mapper>
